@@ -21,7 +21,8 @@ OrbitTrivia is a fun, interactive space-themed trivia app built with Python and 
 
 ## 🖼️ Screenshots
 
-> _Coming soon!_
+![Screenshot -1](Screenshot-1.png)
+
 
 ---
 
