@@ -14,7 +14,9 @@ OrbitTrivia is a fun, interactive space-themed trivia app built with Python and 
 - 🏆 **Score Tracking** — See your score at the end of each quiz
 - 🔄 **Replay** — Try again with new random questions each time
 - 🌌 **Space-Themed UI** — Dark background with colorful buttons
-
+- 🌟 **Hover Effects** — Buttons glow when you hover over them
+- 🗑️ **Clear Leaderboard** — Reset scores with one click
+- ℹ️ **About Screen** — Project info and stats
 ---
 
 ## 🖼️ Screenshots
