@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import json
-import os 
+import os
 
 planets = {
     "Mercury": {
@@ -121,6 +121,26 @@ quiz_questions = {
     ]
 }
 
+#leaderboard
+LEADERBOARD_FILE="leaderboard.json"
+
+def load_leaderboard():
+    if os.path.exists(LEADERBOARD_FILE):
+        with open(LEADERBOARD_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def save_leaderboard(data):
+    with open(LEADERBOARD_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+def add_score(name, score_val, total, diff):
+    lb = load_leaderboard()
+    lb.append({"name": name, "score": score_val, "total": total, "difficulty": diff})
+    lb.sort(key=lambda x: x["score"], reverse=True)
+    lb = lb[:10]
+    save_leaderboard(lb)
+
 
 score = 0
 current_question = 0
@@ -130,6 +150,8 @@ timer_seconds = 0
 timer_id = None
 timer_label = None
 answer_buttons = []
+player_name = ""
+name_entry = None
 
 window = tk.Tk()
 window.title("OrbitTrivia 🌌")
@@ -169,6 +191,16 @@ def show_main_menu():
                          width=22, bg="darkblue", fg="white",
                          command=choose_difficulty)
     quiz_btn.pack(pady=10)
+
+    lb_btn = tk.Button(window, text="🏅  Leaderboard", font=("Arial", 13),
+                       width=22, bg="darkblue", fg="white",
+                       command=show_leaderboard)
+    lb_btn.pack(pady=10)
+
+    facts_btn = tk.Button(window, text="📊  Solar System Facts", font=("Arial", 13),
+                          width=22, bg="darkblue", fg="white",
+                          command=show_solar_facts)
+    facts_btn.pack(pady=10)
 
     help_btn = tk.Button(window, text="❓  How to Play", font=("Arial", 13),
                          width=22, bg="darkblue", fg="white",
@@ -213,6 +245,39 @@ then take the quiz to test yourself!
     back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
                      bg="gray", fg="white", command=show_main_menu)
     back.pack(pady=15)
+
+def show_solar_facts():
+    clear_screen()
+
+    title = tk.Label(window, text="📊 Solar System Facts", font=("Arial", 22, "bold"),
+                     fg="cyan", bg="black")
+    title.pack(pady=15)
+
+    # Facts frame for better alignment
+    facts_frame = tk.Frame(window, bg="#111133", relief="ridge", bd=1)
+    facts_frame.pack(pady=10, padx=20, fill="x")
+
+    facts = [
+        "►  The Sun makes up 99.86% of the solar system's mass  ☀️",
+        "►  Saturn has 146 known moons — the most!  🪐",
+        "►  Earth is the densest planet in our solar system  🌍",
+        "►  Mars has seasons like Earth due to its tilted axis  🔴",
+        "►  Neptune's winds can reach 2,100 km/h  💨",
+        "►  Venus is hotter than Mercury despite being farther  🌡️",
+        "►  Olympus Mons on Mars is 3x taller than Everest  🏔️",
+        "►  Europa (Jupiter's moon) may have a hidden ocean  🌊",
+        "►  Total planets: 8  🪐",
+        "►  Total known moons: 287  🌙",
+        ]
+    for fact in facts:
+        lbl = tk.Label(facts_frame, text=fact, font=("Courier", 10),
+                       fg="#cccccc", bg="#111133", anchor="w",
+                       padx=15, pady=4)
+        lbl.pack(fill="x")
+
+    back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
+                     bg="gray", fg="white", command=show_main_menu)
+    back.pack(pady=20)
 
 
 def show_planet_list():
@@ -281,17 +346,17 @@ def choose_difficulty():
 
     easy_btn = tk.Button(window, text="🟢  Easy (15 sec/question)", font=("Arial", 13),
                          width=25, bg="darkgreen", fg="white",
-                         command=lambda: start_quiz("easy"))
+                         command=lambda: ask_name("easy"))
     easy_btn.pack(pady=10)
 
     med_btn = tk.Button(window, text="🟡  Medium (10 sec/question)", font=("Arial", 13),
                         width=25, bg="darkorange", fg="white",
-                        command=lambda: start_quiz("medium"))
+                        command=lambda: ask_name("medium"))
     med_btn.pack(pady=10)
 
     hard_btn = tk.Button(window, text="🔴  Hard (7 sec/question)", font=("Arial", 13),
                          width=25, bg="darkred", fg="white",
-                         command=lambda: start_quiz("hard"))
+                         command=lambda: ask_name("hard"))
     hard_btn.pack(pady=10)
 
     info = tk.Label(window, text="Harder = harder questions + less time!",
@@ -303,11 +368,43 @@ def choose_difficulty():
     back.pack(pady=10)
 
 
-def start_quiz(diff):
-    global score, current_question, selected_questions, difficulty
+
+def ask_name(diff):
+    global difficulty, name_entry
+    difficulty = diff
+    clear_screen()
+
+    title = tk.Label(window, text="👨‍🚀 Enter Your Name", font=("Arial", 22, "bold"),
+                     fg="cyan", bg="black")
+    title.pack(pady=35)
+
+    name_entry = tk.Entry(window, font=("Arial", 16), width=20,
+                          bg="#111133", fg="white", insertbackground="white",
+                          relief="flat", justify="center")
+    name_entry.pack(pady=15)
+    name_entry.focus()
+
+    start_btn = tk.Button(window, text="🚀  Start Quiz!", font=("Arial", 13),
+                          width=22, bg="darkblue", fg="white",
+                          command=begin_quiz)
+    start_btn.pack(pady=20)
+
+    name_entry.bind("<Return>", lambda e: begin_quiz())
+
+def begin_quiz():
+    global player_name
+    name = name_entry.get().strip()
+    if not name:
+        name = "Space Explorer"
+    player_name = name
+    start_quiz()
+
+
+
+def start_quiz():
+    global score, current_question, selected_questions
     score = 0
     current_question = 0
-    difficulty = diff
     questions = quiz_questions.get(difficulty, quiz_questions["easy"])
     selected_questions = random.sample(questions, min(5, len(questions)))
     show_question()
@@ -421,10 +518,15 @@ def check_answer(selected, correct):
 
 def show_result():
     clear_screen()
+    add_score(player_name, score, len(selected_questions), difficulty)
 
     title = tk.Label(window, text="🏆 Quiz Complete!", font=("Arial", 24, "bold"),
                      fg="gold", bg="black")
     title.pack(pady=20)
+
+    name_label = tk.Label(window, text=f"👨‍🚀 {player_name}",
+                          font=("Arial", 14), fg="cyan", bg="black")
+    name_label.pack(pady=5)
 
     score_text = f"Your Score: {score}/{len(selected_questions)}"
     score_label = tk.Label(window, text=score_text, font=("Arial", 20, "bold"),
@@ -460,15 +562,71 @@ def show_result():
                           font=("Arial", 11), fg="gray", bg="black")
     diff_label.pack(pady=5)
 
-    retry_btn = tk.Button(window, text="🔄  Try Again", font=("Arial", 12),
-                          width=20, bg="darkblue", fg="white",
-                          command=lambda: start_quiz(difficulty))
+    saved_label = tk.Label(window, text="✅ Score saved to leaderboard!",
+                           font=("Arial", 10), fg="lime", bg="black")
+    saved_label.pack(pady=3)
+    
+
+    retry_btn = tk.Button(window, text="🔄 Try Again", font=("Arial", 12), width=20, bg="darkblue", fg="white", command=start_quiz)
     retry_btn.pack(pady=10)
+
+    lb_btn = tk.Button(window, text="🏅  View Leaderboard", font=("Arial",12), width=20, bg="darkblue", fg="white", command=show_leaderboard)
+    lb_btn.pack(pady=5)
 
     menu_btn = tk.Button(window, text="🏠  Back to Menu", font=("Arial", 12),
                          width=20, bg="gray", fg="white",
                          command=show_main_menu)
     menu_btn.pack(pady=5)
+
+
+def show_leaderboard():
+    clear_screen()
+
+    title = tk.Label(window, text="🏅 Leaderboard", font=("Arial", 24, "bold"),
+                     fg="gold", bg="black")
+    title.pack(pady=15)
+
+    lb = load_leaderboard()
+
+    if not lb:
+        empty = tk.Label(window, text="No scores yet!\nPlay a quiz to get on the board!",
+                         font=("Arial", 14), fg="gray", bg="black")
+        empty.pack(pady=40)
+    else:
+        header_frame = tk.Frame(window, bg="#111133")
+        header_frame.pack(fill="x", padx=25, pady=5)
+
+        tk.Label(header_frame, text="Rank", font=("Arial", 10, "bold"),
+                 fg="gold", bg="#111133", width=6).pack(side="left", padx=3)
+        tk.Label(header_frame, text="Name", font=("Arial", 10, "bold"),
+                 fg="gold", bg="#111133", width=14).pack(side="left", padx=3)
+        tk.Label(header_frame, text="Score", font=("Arial", 10, "bold"),
+                 fg="gold", bg="#111133", width=8).pack(side="left", padx=3)
+        tk.Label(header_frame, text="Level", font=("Arial", 10, "bold"),
+                 fg="gold", bg="#111133", width=8).pack(side="left", padx=3)
+
+        medals = ["🥇", "🥈", "🥉"]
+        for i, entry in enumerate(lb[:10]):
+            bg_color = "#0a0a2e" if i % 2 == 0 else "black"
+            row = tk.Frame(window, bg=bg_color)
+            row.pack(fill="x", padx=25)
+
+            rank = medals[i] if i < 3 else f"#{i+1}"
+            tk.Label(row, text=rank, font=("Arial", 10),
+                     fg="white", bg=bg_color, width=6).pack(side="left", padx=3)
+            tk.Label(row, text=entry["name"], font=("Arial", 10),
+                     fg="white", bg=bg_color, width=14).pack(side="left", padx=3)
+            tk.Label(row, text=f"{entry['score']}/{entry['total']}",
+                     font=("Arial", 10),
+                     fg="lime", bg=bg_color, width=8).pack(side="left", padx=3)
+            tk.Label(row, text=entry["difficulty"].upper(),
+                     font=("Arial", 10),
+                     fg="gray", bg=bg_color, width=8).pack(side="left", padx=3)
+
+    back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
+                     bg="gray", fg="white", command=show_main_menu)
+    back.pack(pady=20)
+
 
 show_main_menu()
 window.mainloop()
