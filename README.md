@@ -5,7 +5,15 @@
 OrbitTrivia is a fun, interactive space-themed trivia app built with Python and Tkinter. Players can explore planets and take quizzes to test their knowledge about our solar system.
 
 ---
+## 🎮 Play Online
 
+👉 **[Play OrbitTrivia Here!](https://yourusername.github.io/OrbitTrivia)**
+
+> Note: This project was originally built in **Python with Tkinter**. 
+> The web version is a playable demo of the same game.
+> The original Python source code is in `orbit_trivia.py`.
+
+---
 ## 🚀 Features
 
 - 🌍 **Planet Explorer** — Click on any of the 8 planets to learn fun facts
