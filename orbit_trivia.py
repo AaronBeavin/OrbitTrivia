@@ -94,6 +94,8 @@ quiz_questions = {
         {"question": "Which planet is farthest from the Sun?","options": ["Uranus","Saturn","Neptune","Pluto"], "answer":"Neptune"},
         {"question": "Which planet is the smallest?","options": ["Mars", "Mercury", "Venus", "Earth"], "answer":"Mercury"},
         {"question": "What does Earth mostly have on its surface?", "options": ["Sand", "Ice", "Water", "Lava"], "answer":"Water"},
+        {"question": "Which planet is nicknamed the Blue Planet?","options": ["Neptune","Uranus","Earth","Venus"], "answer": "Earth"},
+        {"question": "What shape is Earth?", "options": ["Flat","Cube","Sphere","Cylinder"], "answer": "Sphere"},
     ],
     "medium": [
         {"question": "Which planet rotates on its side?", "options": ["Neptune", "Uranus", "Saturn", "Jupiter"], "answer": "Uranus"},
@@ -106,6 +108,8 @@ quiz_questions = {
         {"question": "How long  is a day on Jupiter?", "options": ["5 hours","10 hours","24 hours","48 hours"],"answer":"10 hours"},
         {"question": "Which planet has the most moons?", "options": ["Jupiter", "Saturn", "Uranus", "Neptune"],"answer":"Saturn" },
         {"question": "Which planet appears blue due to methane?", "options":["Neptune","Earth","Uranus","Both Uranus and Neptune"],"answer":"Both Uranus and Neptune"},
+        {"question": "Which planet has a day longer than its year?","options": ["Mercury","Venus","Mars","Jupiter"], "answer":"Venus"},
+        {"question": "What is the second largest planet?", "options": ["Jupiter","Neptune","Saturn","Uranus"], "answer":"Saturn"},
     ],
     "hard": [
         {"question": "What is the tallest volcano in the solar system?", "options": ["Mount Everest", "Olympus Mons", "Mauna Kea", "Mount Etna"], "answer": "Olympus Mons"},
@@ -118,6 +122,8 @@ quiz_questions = {
         {"question": "Which moon might have an ocean under its ice?", "options": ["Titan", "Europa", "Ganymede", "Io"], "answer": "Europa"},
         {"question": "How many Earth days is a year on Mercury?", "options": ["88", "165", "225", "365"], "answer": "88"},
         {"question": "Which planet was first discovered with a telescope?", "options": ["Neptune", "Saturn", "Uranus", "Pluto"], "answer": "Uranus"},
+        {"question": "What is the hottest planet's surface temperature?","options":["275°C", "475°C", "175°C", "375°C"], "answer": "475°C"},
+        {"question": "Which planet has the shortest day?", "options": ["Earth","Mars","Jupiter","Saturn"], "answer":"Jupiter"},
     ]
 }
 
@@ -134,6 +140,12 @@ def save_leaderboard(data):
     with open(LEADERBOARD_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
+def clear_leaderboard():
+    if os.path.exists(LEADERBOARD_FILE):
+        os.remove(LEADERBOARD_FILE)
+    messagebox.showinfo("🗑️ Cleared!", "Leaderboard has been cleared!")
+    show_leaderboard()
+
 def add_score(name, score_val, total, diff):
     lb = load_leaderboard()
     lb.append({"name": name, "score": score_val, "total": total, "difficulty": diff})
@@ -141,6 +153,36 @@ def add_score(name, score_val, total, diff):
     lb = lb[:10]
     save_leaderboard(lb)
 
+#effects
+def on_enter(e):
+    e.widget['bg'] = '#2d2d6e'
+
+def on_leave(e):
+    e.widget['bg'] = 'darkblue'
+
+def on_enter_green(e):
+    e.widget['bg'] = '#006600'
+
+def on_leave_green(e):
+    e.widget['bg'] = 'darkgreen'
+
+def on_enter_orange(e):
+    e.widget['bg'] = '#cc7700'
+
+def on_leave_orange(e):
+    e.widget['bg'] = 'darkorange'
+
+def on_enter_red(e):
+    e.widget['bg'] = '#aa0000'
+
+def on_leave_red(e):
+    e.widget['bg'] = 'darkred'
+
+def on_enter_gray(e):
+    e.widget['bg'] = '#555555'
+    
+def on_leave_gray(e):
+    e.widget['bg'] = 'gray'
 
 score = 0
 current_question = 0
@@ -155,7 +197,7 @@ name_entry = None
 
 window = tk.Tk()
 window.title("OrbitTrivia 🌌")
-window.geometry("500x600")
+window.geometry("500x700")
 window.configure(bg="black")
 window.resizable(False, False)
 
@@ -173,39 +215,60 @@ def show_main_menu():
 
     title = tk.Label(window, text="🪐 OrbitTrivia", font=("Arial", 28, "bold"),
                      fg="cyan", bg="black")
-    title.pack(pady=25)
+    title.pack(pady=15)
 
     subtitle = tk.Label(window, text="Explore planets & test your space knowledge!",
                         font=("Arial", 11), fg="gray", bg="black")
     subtitle.pack(pady=5)
 
     line = tk.Label(window, text="━" * 35, fg="#333333", bg="black")
-    line.pack(pady=10)
+    line.pack(pady=5)
 
     explore_btn = tk.Button(window, text="🌍  Explore Planets", font=("Arial", 13),
                             width=22, bg="darkblue", fg="white",
                             command=show_planet_list)
-    explore_btn.pack(pady=10)
+    explore_btn.pack(pady=7)
+    explore_btn.bind("<Enter>", on_enter)
+    explore_btn.bind("<Leave>", on_leave)
+
 
     quiz_btn = tk.Button(window, text="🧠  Start Quiz", font=("Arial", 13),
                          width=22, bg="darkblue", fg="white",
                          command=choose_difficulty)
-    quiz_btn.pack(pady=10)
+    quiz_btn.pack(pady=7)
+    quiz_btn.bind("<Enter>", on_enter)
+    quiz_btn.bind("<Leave>", on_leave)
+
 
     lb_btn = tk.Button(window, text="🏅  Leaderboard", font=("Arial", 13),
                        width=22, bg="darkblue", fg="white",
                        command=show_leaderboard)
-    lb_btn.pack(pady=10)
+    lb_btn.pack(pady=7)
+    lb_btn.bind("<Enter>", on_enter)
+    lb_btn.bind("<Leave>", on_leave)
+
 
     facts_btn = tk.Button(window, text="📊  Solar System Facts", font=("Arial", 13),
                           width=22, bg="darkblue", fg="white",
                           command=show_solar_facts)
-    facts_btn.pack(pady=10)
+    facts_btn.pack(pady=7)
+    facts_btn.bind("<Enter>", on_enter)
+    facts_btn.bind("<Leave>", on_leave)
+
 
     help_btn = tk.Button(window, text="❓  How to Play", font=("Arial", 13),
                          width=22, bg="darkblue", fg="white",
                          command=show_help)
-    help_btn.pack(pady=10)
+    help_btn.pack(pady=7)
+    help_btn.bind("<Enter>", on_enter)
+    help_btn.bind("<Leave>", on_leave)
+
+    about_btn = tk.Button(window, text="ℹ️  About", font=("Arial", 13),
+                          width=22, bg="darkblue", fg="white",
+                          command=show_about)
+    about_btn.pack(pady=7)
+    about_btn.bind("<Enter>", on_enter)
+    about_btn.bind("<Leave>", on_leave)
 
     footer = tk.Label(window, text="Made by Aaron 🚀 | Flavorthon",
                       font=("Arial", 10), fg="gray", bg="black")
@@ -245,6 +308,49 @@ then take the quiz to test yourself!
     back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
                      bg="gray", fg="white", command=show_main_menu)
     back.pack(pady=15)
+    back.bind("<Enter>", on_enter_gray)
+    back.bind("<Leave>", on_leave_gray)
+
+def show_about():
+    clear_screen()
+
+    title = tk.Label(window, text="ℹ️ About OrbitTrivia", font=("Arial", 22, "bold"),
+                     fg="cyan", bg="black")
+    title.pack(pady=15)
+
+    about_frame = tk.Frame(window, bg="#111133", relief="ridge", bd=1)
+    about_frame.pack(pady=10, padx=20, fill="x")
+
+
+    info = [
+        "🪐  OrbitTrivia v5.0",
+        "",
+        "👨‍💻  Made by: Aaron Beavin",
+        "🏗️  Built for: Flavorthon by Hack Club",
+        "🐍  Language: Python 3",
+        "🖼️  GUI: Tkinter",
+        "",
+        "📊  Stats:",
+        f"     ►  {len(planets)} planets",
+        f"     ►  {sum(len(q) for q in quiz_questions.values())} quiz questions",
+        f"     ►  3 difficulty levels",
+        f"     ►  Leaderboard with top 10 scores",
+        "",
+        "🚀  Thanks for playing!",
+    ]
+   
+    for line in info:
+        lbl = tk.Label(about_frame, text=line, font=("Arial", 11),
+                       fg="#cccccc", bg="#111133", anchor="w",
+                       padx=15, pady=2)
+        lbl.pack(fill="x")
+
+    back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
+                     bg="gray", fg="white", command=show_main_menu)
+    back.pack(pady=20)
+    back.bind("<Enter>", on_enter_gray)
+    back.bind("<Leave>", on_leave_gray)
+
 
 def show_solar_facts():
     clear_screen()
@@ -266,8 +372,8 @@ def show_solar_facts():
         "►  Venus is hotter than Mercury despite being farther  🌡️",
         "►  Olympus Mons on Mars is 3x taller than Everest  🏔️",
         "►  Europa (Jupiter's moon) may have a hidden ocean  🌊",
-        "►  Total planets: 8  🪐",
-        "►  Total known moons: 287  🌙",
+        f"►  Total planets: {len(planets)}  🪐",
+        f"►  Total known moons: {sum(p['moons'] for p in planets.values())}  🌙",
         ]
     for fact in facts:
         lbl = tk.Label(facts_frame, text=fact, font=("Courier", 10),
@@ -278,6 +384,9 @@ def show_solar_facts():
     back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
                      bg="gray", fg="white", command=show_main_menu)
     back.pack(pady=20)
+    back.bind("<Enter>", on_enter_gray)
+    back.bind("<Leave>", on_leave_gray)
+
 
 
 def show_planet_list():
@@ -292,10 +401,14 @@ def show_planet_list():
                         width=22, bg="darkblue", fg="white",
                         command=lambda p=planet: show_planet_info(p))
         btn.pack(pady=3)
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
 
     back_btn = tk.Button(window, text="⬅ Back to Menu", font=("Arial", 11),
                          bg="gray", fg="white", command=show_main_menu)
     back_btn.pack(pady=15)
+    back_btn.bind("<Enter>", on_enter_gray)
+    back_btn.bind("<Leave>", on_leave_gray)
 
 def show_planet_info(planet):
     clear_screen()
@@ -335,6 +448,8 @@ def show_planet_info(planet):
     back_btn = tk.Button(window, text="⬅ Back to Planets", font=("Arial", 11),
                          bg="gray", fg="white", command=show_planet_list)
     back_btn.pack(pady=10)
+    back_btn.bind("<Enter>", on_enter_gray)
+    back_btn.bind("<Leave>", on_leave_gray)
 
 
 def choose_difficulty():
@@ -348,16 +463,23 @@ def choose_difficulty():
                          width=25, bg="darkgreen", fg="white",
                          command=lambda: ask_name("easy"))
     easy_btn.pack(pady=10)
+    easy_btn.bind("<Enter>", on_enter_green)
+    easy_btn.bind("<Leave>", on_leave_green)
 
     med_btn = tk.Button(window, text="🟡  Medium (10 sec/question)", font=("Arial", 13),
                         width=25, bg="darkorange", fg="white",
                         command=lambda: ask_name("medium"))
     med_btn.pack(pady=10)
+    med_btn.bind("<Enter>", on_enter_orange)
+    med_btn.bind("<Leave>", on_leave_orange)
+
 
     hard_btn = tk.Button(window, text="🔴  Hard (7 sec/question)", font=("Arial", 13),
                          width=25, bg="darkred", fg="white",
                          command=lambda: ask_name("hard"))
     hard_btn.pack(pady=10)
+    hard_btn.bind("<Enter>", on_enter_red)
+    hard_btn.bind("<Leave>", on_leave_red)
 
     info = tk.Label(window, text="Harder = harder questions + less time!",
                     font=("Arial", 11), fg="gray", bg="black")
@@ -366,6 +488,8 @@ def choose_difficulty():
     back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
                      bg="gray", fg="white", command=show_main_menu)
     back.pack(pady=10)
+    back.bind("<Enter>", on_enter_gray)
+    back.bind("<Leave>", on_leave_gray)
 
 
 
@@ -443,6 +567,11 @@ def show_question():
                           fg=diff_colors.get(difficulty, "white"), bg="black")
     diff_label.pack(side="left", padx=10)
 
+    name_label = tk.Label(top_frame,
+                          text=f"👨‍🚀 {player_name}",
+                          font=("Arial", 10), fg="cyan", bg="black")
+    name_label.pack(side="right", padx=10)                      
+
     score_label = tk.Label(top_frame,
                            text=f"Score: {score}",
                            font=("Arial", 12, "bold"), fg="gold", bg="black")
@@ -468,6 +597,8 @@ def show_question():
                         command=lambda o=option: check_answer(o, q["answer"]))
         btn.pack(pady=5)
         answer_buttons.append(btn)
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
 
     
     run_timer(q["answer"])
@@ -569,14 +700,21 @@ def show_result():
 
     retry_btn = tk.Button(window, text="🔄 Try Again", font=("Arial", 12), width=20, bg="darkblue", fg="white", command=start_quiz)
     retry_btn.pack(pady=10)
+    retry_btn.bind("<Enter>", on_enter)
+    retry_btn.bind("<Leave>", on_leave)
+
 
     lb_btn = tk.Button(window, text="🏅  View Leaderboard", font=("Arial",12), width=20, bg="darkblue", fg="white", command=show_leaderboard)
     lb_btn.pack(pady=5)
+    lb_btn.bind("<Enter>", on_enter)
+    lb_btn.bind("<Leave>", on_leave)
 
     menu_btn = tk.Button(window, text="🏠  Back to Menu", font=("Arial", 12),
                          width=20, bg="gray", fg="white",
                          command=show_main_menu)
     menu_btn.pack(pady=5)
+    menu_btn.bind("<Enter>", on_enter_gray)
+    menu_btn.bind("<Leave>", on_leave_gray)
 
 
 def show_leaderboard():
@@ -623,10 +761,20 @@ def show_leaderboard():
                      font=("Arial", 10),
                      fg="gray", bg=bg_color, width=8).pack(side="left", padx=3)
 
+    clear_btn = tk.Button(window, text="🗑️  Clear Leaderboard", font=("Arial", 10),
+                          width=20, bg="darkred", fg="white",
+                          command=clear_leaderboard)
+    clear_btn.pack(pady=5)
+    clear_btn.bind("<Enter>", on_enter_red)
+    clear_btn.bind("<Leave>", on_leave_red)          
+
     back = tk.Button(window, text="⬅  Back to Menu", font=("Arial", 11),
                      bg="gray", fg="white", command=show_main_menu)
     back.pack(pady=20)
+    back.bind("<Enter>", on_enter_gray)
+    back.bind("<Leave>", on_leave_gray)
 
 
+# game
 show_main_menu()
 window.mainloop()
