@@ -7,7 +7,7 @@ OrbitTrivia is a fun, interactive space-themed trivia app built with Python and 
 ---
 ## 🎮 Play Online
 
-👉 **[Play OrbitTrivia Here!](https://yourusername.github.io/OrbitTrivia)**
+👉 **[Play OrbitTrivia Here!](https://AaronBeavin.github.io/OrbitTrivia)**
 
 > Note: This project was originally built in **Python with Tkinter**. 
 > The web version is a playable demo of the same game.
