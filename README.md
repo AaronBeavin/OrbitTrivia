@@ -34,3 +34,5 @@ OrbitTrivia is a fun, interactive space-themed trivia app built with Python and 
 
 ### Devlog #5 (1 hr 33 min) — FINAL
 > Final polish! Added hover effects on all buttons, player name in quiz top bar, Clear Leaderboard button, About screen with project stats, dynamic solar facts, and 6 more quiz questions. Improved window size and spacing. Final testing complete. Ready to ship! 🚀
+
+**Total Development Time:** ~5 hours 17 minutes 
